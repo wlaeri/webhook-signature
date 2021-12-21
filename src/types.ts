@@ -15,4 +15,3 @@ export const MessageDigestAlgorithms = [
 ] as const;
 
 export type MessageDigestAlgorithm = typeof MessageDigestAlgorithms[number];
-export type PayloadData = Record<string, unknown>;

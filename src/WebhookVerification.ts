@@ -1,8 +1,7 @@
 import crypto from 'crypto';
+import { Stringable, SignedPayload, WebhookVerificationOptions } from './interfaces';
 import { DEFAULT_ALGO, DEFAULT_TTL } from './constants';
-import { SignedPayload } from './interfaces/SignedPayload';
-import { WebhookVerificationOptions } from './interfaces/WebhookVerificationOptions';
-import { MessageDigestAlgorithm, PayloadData } from './types';
+import { MessageDigestAlgorithm } from './types';
 
 export class WebhookVerification {
   private secret: string;
@@ -28,14 +27,14 @@ export class WebhookVerification {
   /**
    * Utility function to generate a hash from a payload and a timestamp.
    * @private
-   * @param {PayloadData} payload
+   * @param {Stringable} payload
    * @param {number} timestamp
    * @param {MessageDigestAlgorithm} algo
    * @param {string} secret
    * @return {*}  {string}
    * @memberof WebhookVerification
    */
-  private _sign(payload: PayloadData, timestamp: number, algo: MessageDigestAlgorithm, secret: string): string {
+  private _sign(payload: Stringable, timestamp: number, algo: MessageDigestAlgorithm, secret: string): string {
     return crypto.createHmac(algo, secret).update(JSON.stringify(payload)).update(timestamp.toString()).digest('hex');
   }
 
@@ -47,7 +46,7 @@ export class WebhookVerification {
    * @return {*}  {SignedPayload<T>}
    * @memberof WebhookVerification
    */
-  public sign<T extends PayloadData>(payload: T, secret?: string): SignedPayload<T> {
+  public sign<T extends Stringable>(payload: T, secret?: string): SignedPayload<T> {
     const iat = this._getNow();
     const sig = this._sign(payload, iat, this.algo, secret || this.secret);
     return {
@@ -60,11 +59,11 @@ export class WebhookVerification {
 
   /**
    * Verify a signed payload by checking its provided signature against its hash.
-   * @param {SignedPayload<PayloadData>} signedPayload
+   * @param {SignedPayload<Stringable>} signedPayload
    * @return {*}  {boolean}
    * @memberof WebhookVerification
    */
-  public verify(signedPayload: SignedPayload<PayloadData>): boolean {
+  public verify(signedPayload: SignedPayload<Stringable>): boolean {
     const age = this._getNow() - signedPayload.iat;
     if (age > this.ttl) return false;
     const hash = this._sign(signedPayload.data, signedPayload.iat, signedPayload.alg, this.secret);

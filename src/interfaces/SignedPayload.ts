@@ -1,6 +1,7 @@
-import { MessageDigestAlgorithm, PayloadData } from '../types';
+import { Stringable } from './Stringable';
+import { MessageDigestAlgorithm } from '../types';
 
-export interface SignedPayload<T extends PayloadData> {
+export interface SignedPayload<T extends Stringable> {
   /**
    * The data payload of the signed webhook.
    * @type {T}
