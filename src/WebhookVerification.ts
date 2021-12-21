@@ -1,15 +1,15 @@
 import crypto from 'crypto';
 import { DEFAULT_ALGO, DEFAULT_TTL } from './constants';
 import { SignedPayload } from './interfaces/SignedPayload';
-import { WebhookAuthOptions } from './interfaces/WebhookAuthOptions';
+import { WebhookVerificationOptions } from './interfaces/WebhookVerificationOptions';
 import { MessageDigestAlgorithm, PayloadData } from './types';
 
-export class WebhookAuth {
+export class WebhookVerification {
   private secret: string;
   private algo: MessageDigestAlgorithm;
   private ttl: number;
 
-  constructor(options: WebhookAuthOptions) {
+  constructor(options: WebhookVerificationOptions) {
     this.secret = options.secret;
     this.algo = options.algorithm || DEFAULT_ALGO;
     this.ttl = options.ttl || DEFAULT_TTL;
@@ -19,7 +19,7 @@ export class WebhookAuth {
    * Utility function to return current UNIX epoch time in seconds.
    * @private
    * @return {*}  {number}
-   * @memberof WebhookAuth
+   * @memberof WebhookVerification
    */
   private _getNow(): number {
     return Math.floor(Date.now() / 1000);
@@ -30,27 +30,26 @@ export class WebhookAuth {
    * @private
    * @param {PayloadData} payload
    * @param {number} timestamp
+   * @param {MessageDigestAlgorithm} algo
+   * @param {string} secret
    * @return {*}  {string}
-   * @memberof WebhookAuth
+   * @memberof WebhookVerification
    */
-  private _sign(payload: PayloadData, timestamp: number): string {
-    return crypto
-      .createHmac(this.algo, this.secret)
-      .update(JSON.stringify(payload))
-      .update(timestamp.toString())
-      .digest('hex');
+  private _sign(payload: PayloadData, timestamp: number, algo: MessageDigestAlgorithm, secret: string): string {
+    return crypto.createHmac(algo, secret).update(JSON.stringify(payload)).update(timestamp.toString()).digest('hex');
   }
 
   /**
    * A function to sign a webhook request body.
    * @template T The structure of the data payload.
    * @param {T} payload The data payload to sign.
+   * @param {string} [secret] Optional secret to override `this.secret`. Useful for issuing client-specific secrets.
    * @return {*}  {SignedPayload<T>}
-   * @memberof WebhookAuth
+   * @memberof WebhookVerification
    */
-  public sign<T extends PayloadData>(payload: T): SignedPayload<T> {
+  public sign<T extends PayloadData>(payload: T, secret?: string): SignedPayload<T> {
     const iat = this._getNow();
-    const sig = this._sign(payload, iat);
+    const sig = this._sign(payload, iat, this.algo, secret || this.secret);
     return {
       data: payload,
       sig,
@@ -63,12 +62,12 @@ export class WebhookAuth {
    * Verify a signed payload by checking its provided signature against its hash.
    * @param {SignedPayload<PayloadData>} signedPayload
    * @return {*}  {boolean}
-   * @memberof WebhookAuth
+   * @memberof WebhookVerification
    */
   public verify(signedPayload: SignedPayload<PayloadData>): boolean {
     const age = this._getNow() - signedPayload.iat;
     if (age > this.ttl) return false;
-    const hash = this._sign(signedPayload.data, signedPayload.iat);
+    const hash = this._sign(signedPayload.data, signedPayload.iat, signedPayload.alg, this.secret);
     return hash === signedPayload.sig;
   }
 }

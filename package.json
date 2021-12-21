@@ -1,5 +1,5 @@
 {
-  "name": "webhook-signature",
+  "name": "webhook-verification",
   "version": "1.0.0",
   "description": "A utility for signing and verifying webhook requests.",
   "main": "index.js",
@@ -13,20 +13,21 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/wlaeri/webhook-signature"
+    "url": "https://github.com/wlaeri/webhook-verification"
   },
   "keywords": [
     "webhook",
+    "verification",
     "auth",
     "signature",
-    "verification"
+    "security"
   ],
   "author": "Will Laeri <wlaeri@gmail.com> (https://github.com/wlaeri)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/wlaeri/webhook-signature/issues"
+    "url": "https://github.com/wlaeri/webhook-verification/issues"
   },
-  "homepage": "https://github.com/wlaeri/webhook-signature#readme",
+  "homepage": "https://github.com/wlaeri/webhook-verification#readme",
   "devDependencies": {
     "@types/jest": "^27.0.3",
     "@types/node": "^17.0.0",

@@ -1,4 +1,4 @@
-const MessageDigestAlgorithms = [
+export const MessageDigestAlgorithms = [
   'gost-mac',
   'md4',
   'md5',

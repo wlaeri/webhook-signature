@@ -1,10 +1,10 @@
 import { SignedPayload } from './interfaces/SignedPayload';
-import { WebhookAuth } from './WebhookAuth';
+import { WebhookVerification } from './WebhookVerification';
 
-describe('WebhookAuth', () => {
-  let webhookAuth: WebhookAuth;
+describe('WebhookVerification', () => {
+  let webhookVerification: WebhookVerification;
   beforeAll(() => {
-    webhookAuth = new WebhookAuth({ secret: 'top-secret', ttl: 1 });
+    webhookVerification = new WebhookVerification({ secret: 'top-secret', ttl: 1 });
   });
   afterAll(jest.clearAllMocks);
   describe('sign method', () => {
@@ -13,8 +13,8 @@ describe('WebhookAuth', () => {
         message: 'test',
       };
       Date.now = jest.fn(() => 60000);
-      const signedPayload1 = webhookAuth.sign(payload);
-      const signedPayload2 = webhookAuth.sign(payload);
+      const signedPayload1 = webhookVerification.sign(payload);
+      const signedPayload2 = webhookVerification.sign(payload);
       expect(signedPayload1.sig).toEqual(signedPayload2.sig);
     });
 
@@ -23,13 +23,13 @@ describe('WebhookAuth', () => {
         message: 'test',
       };
       Date.now = jest.fn(() => 60000);
-      const signedPayload1 = webhookAuth.sign(payload);
+      const signedPayload1 = webhookVerification.sign(payload);
       Date.now = jest.fn(() => 120000);
-      const signedPayload2 = webhookAuth.sign(payload);
+      const signedPayload2 = webhookVerification.sign(payload);
       expect(signedPayload1.sig).not.toEqual(signedPayload2.sig);
     });
 
-    it('returns a different signature for identical payloads signed at the same time', () => {
+    it('returns a different signature for different payloads signed at the same time', () => {
       const payload1 = {
         message: 'test1',
       };
@@ -37,8 +37,18 @@ describe('WebhookAuth', () => {
         message: 'test2',
       };
       Date.now = jest.fn(() => 60000);
-      const signedPayload1 = webhookAuth.sign(payload1);
-      const signedPayload2 = webhookAuth.sign(payload2);
+      const signedPayload1 = webhookVerification.sign(payload1);
+      const signedPayload2 = webhookVerification.sign(payload2);
+      expect(signedPayload1.sig).not.toEqual(signedPayload2.sig);
+    });
+
+    it('returns a different signature for identical payloads signed at the same time with different secrets', () => {
+      const payload = {
+        message: 'test',
+      };
+      Date.now = jest.fn(() => 60000);
+      const signedPayload1 = webhookVerification.sign(payload, 'top-secret-1');
+      const signedPayload2 = webhookVerification.sign(payload, 'top-secret-2');
       expect(signedPayload1.sig).not.toEqual(signedPayload2.sig);
     });
   });
@@ -53,7 +63,7 @@ describe('WebhookAuth', () => {
         iat: 60,
       };
       Date.now = jest.fn(() => 120000);
-      expect(webhookAuth.verify(signedPayload)).toBe(false);
+      expect(webhookVerification.verify(signedPayload)).toBe(false);
     });
 
     it('returns false for a signed payload with an invalid signature', () => {
@@ -66,7 +76,7 @@ describe('WebhookAuth', () => {
         iat: 60,
       };
       Date.now = jest.fn(() => 60000);
-      expect(webhookAuth.verify(signedPayload)).toBe(false);
+      expect(webhookVerification.verify(signedPayload)).toBe(false);
     });
 
     it('returns true for a signed payload with a valid signature', () => {
@@ -79,7 +89,7 @@ describe('WebhookAuth', () => {
         iat: 60,
       };
       Date.now = jest.fn(() => 60000);
-      expect(webhookAuth.verify(signedPayload)).toBe(true);
+      expect(webhookVerification.verify(signedPayload)).toBe(true);
     });
   });
 });

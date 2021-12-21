@@ -1,14 +1,14 @@
 import { MessageDigestAlgorithm } from '../types';
 
 /**
- * Configuration options for the WebhookAuth class.
+ * Configuration options for the WebhookVerification class.
  */
-export interface WebhookAuthOptions {
+export interface WebhookVerificationOptions {
   /**
    * The shared secret used by the server to sign the webhook payload
    * and by the client to verify the request.
    * @type {string}
-   * @memberof WebhookAuthOptions
+   * @memberof WebhookVerificationOptions
    */
   secret: string;
 
@@ -16,14 +16,14 @@ export interface WebhookAuthOptions {
    * The message digest algorithm used to generate the webhook signature.
    * @default DEFAULT_ALGO
    * @type {MessageDigestAlgorithm}
-   * @memberof WebhookAuthOptions
+   * @memberof WebhookVerificationOptions
    */
   algorithm?: MessageDigestAlgorithm;
 
   /**
    * The time-to-live (TTL) of the signed payload in seconds.
    * @type {number}
-   * @memberof WebhookAuthOptions
+   * @memberof WebhookVerificationOptions
    */
   ttl?: number;
 }
