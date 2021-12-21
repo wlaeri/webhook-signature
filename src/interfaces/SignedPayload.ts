@@ -1,4 +1,4 @@
-import { PayloadData } from '../types';
+import { MessageDigestAlgorithm, PayloadData } from '../types';
 
 export interface SignedPayload<T extends PayloadData> {
   /**
@@ -14,6 +14,13 @@ export interface SignedPayload<T extends PayloadData> {
    * @memberof SignedPayload
    */
   sig: string;
+
+  /**
+   * The message digest algorithm used to generate the webhook signature.
+   * @type {MessageDigestAlgorithm}
+   * @memberof SignedPayload
+   */
+  alg: MessageDigestAlgorithm;
 
   /**
    * The issued at timestamp of the signed webhook payload.

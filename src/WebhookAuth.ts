@@ -55,6 +55,7 @@ export class WebhookAuth {
       data: payload,
       sig,
       iat,
+      alg: this.algo,
     };
   }
 

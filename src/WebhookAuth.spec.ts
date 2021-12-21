@@ -49,6 +49,7 @@ describe('WebhookAuth', () => {
           message: 'test',
         },
         sig: 'invalid',
+        alg: 'sha256',
         iat: 60,
       };
       Date.now = jest.fn(() => 120000);
@@ -61,6 +62,7 @@ describe('WebhookAuth', () => {
           message: 'test',
         },
         sig: 'invalid',
+        alg: 'sha256',
         iat: 60,
       };
       Date.now = jest.fn(() => 60000);
@@ -73,6 +75,7 @@ describe('WebhookAuth', () => {
           message: 'test',
         },
         sig: 'ede4af2b45d72cd4a766528bd08c7f436a42c9e7d1e8f612e9c6cdf9098dbc7e',
+        alg: 'sha256',
         iat: 60,
       };
       Date.now = jest.fn(() => 60000);

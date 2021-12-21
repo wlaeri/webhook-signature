@@ -13,7 +13,7 @@ export interface WebhookAuthOptions {
   secret: string;
 
   /**
-   * The message digest algorithm to generate the webhook signature.
+   * The message digest algorithm used to generate the webhook signature.
    * @default DEFAULT_ALGO
    * @type {MessageDigestAlgorithm}
    * @memberof WebhookAuthOptions
