@@ -1,19 +1,19 @@
-# Webhook Verification
+# Webhook Verifier
 A utility for signing and verifying webhook requests.
 
 ## Usage
 
-Install `webhook-verfication` as a dependency in your project:
+Install `webhook-verifier` as a dependency in your project:
 
 ```sh
-$ npm install webhook-verification
+$ npm install webhook-verifier
 ```
 
-Create an instance of `WebhookVerification`:
+Create an instance of `WebhookVerifier`:
 ```ts
-import { WebhookVerification } from 'webhook-verification'
+import { WebhookVerifier } from 'webhook-verifier'
 
-const webhookVerification = new WebhookVerification({
+const webhookVerifier = new WebhookVerifier({
   secret: 'my-super-secret-phrase', // Replace with the secret you want to sign the webhook payloads with.
 })
 
@@ -21,7 +21,7 @@ const webhookVerification = new WebhookVerification({
 
 Sign your webhook request on the server:
 ```ts
-import { SignedPayload } from 'webhook-verification'
+import { SignedPayload } from 'webhook-verifier'
 
 /**
  * The webhook request payload for a property listing update event.
@@ -40,7 +40,7 @@ const payload: ListingUpdateEvent = {
   listingId: '4909afcd-311b-4f7e-9123-8b7fe4a9ad95'
 }
 
-const signedPayload: SignedPayload<ListingUpdateEvent> = webhookVerification.sign(payload)
+const signedPayload: SignedPayload<ListingUpdateEvent> = webhookVerifier.sign(payload)
 
 ```
 
@@ -60,7 +60,7 @@ Your signed payload will now have the following attributes:
 
 You can now verify your signed payload on the client side:
 ```ts
-webhookVerification.verify(signedPayload); // => true
+webhookVerifier.verify(signedPayload); // => true
 
 const invalidPayload: SignedPayload<ListingUpdateEvent> = {
   data: {
@@ -71,8 +71,8 @@ const invalidPayload: SignedPayload<ListingUpdateEvent> = {
   alg: 'sha256',
 };
 
-webhookVerification.verify(invalidPayload); // => false
+webhookVerifier.verify(invalidPayload); // => false
 
 ```
 
-Since the request body is signed with the data payload and the issued at timestamp, changing either will cause validation to fail.
+Since the request body is signed with the data payload and the issued at timestamp, changing either will cause verification to fail.
